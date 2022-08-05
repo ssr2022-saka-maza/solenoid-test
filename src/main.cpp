@@ -1,22 +1,21 @@
 #include <Arduino.h>
-#include <ssr/DigitalOut.hpp>
+#include <ssr/Solenoid.hpp>
+ssr::Solenoid solenoid(5);
 
-ssr::DigitalOut pin(5);
-bool flag;
+uint32_t lastTime = 0;
 
 void setup() {
-    pin.begin();
-    flag = false;
+    solenoid.begin();
     Serial.begin(9600);
 }
 
 void loop() {
-    if (!flag) {
-        pin.setValue(true);
-        flag = true;
-        Serial.println("bun!!!!");
-    } else {
-        pin.setValue(false);
+    solenoid.update();
+    uint32_t currentTime = millis();
+    if (currentTime - lastTime >= 5000) {
+        Serial.println("bun!");
+        solenoid.fire();
+        lastTime = currentTime;
     }
-    delay(100);
+    delay(10);
 }
